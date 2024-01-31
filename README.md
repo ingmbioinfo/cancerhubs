@@ -1,4 +1,4 @@
-<img src="..." align="center" alt="" width="120" />
+<img src="cancerhubs_logo.png" align="right" alt="" width="200" />
 
 
 
