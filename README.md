@@ -13,10 +13,10 @@ CancerHubs is a novel computational framework designed to predict proteins and p
 - **Interactomics**: Interaction data are extracted from the BioGrid database, focusing on interactions between proteins encoded by genes found in the mutated gene lists.
 
 ## Pipeline Description
-1. **Data Retrieval**: Mutation datasets are collected, and a non-stringent list of mutated genes is generated for each cancer type.
+1. **Data Retrieval**: Mutation datasets are collected, and a list of mutated genes is generated for each cancer type.
 2. **Clinical Outcome Correlation**: Z-scores quantifying the correlation between gene expression and patient survival are merged with mutational data.
 3. **Gene Classification**: Genes are classified based on their mutation status and correlation with clinical outcomes into MUT (exclusively mutated), PRECOG (expression correlated with outcomes but not mutated), and MUT + PRECOG (both mutated and expression correlated with outcomes).
-4. **Interactome Determination**: The global interactome of each cancer-related gene is defined, focusing on proteins encoded by genes classified as cancer-relevant.
+4. **Interactome Determination**: The global interactome of each cancer-related gene is defined.
 5. **Network Score Calculation**: A network score is calculated for each gene based on the number of mutated interactors, ranking genes to define protein hubs.
 
 ## Repository Content
