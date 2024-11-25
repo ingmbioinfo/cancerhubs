@@ -25,7 +25,7 @@ add_mut_labels <- function(data, NON_ORF){
 
 # Function to retrieve metaZ from precog
 retrieve_metaZ <- function(name){
-    precog <- read.csv('/mnt/home/ferrari/project_cancer/data/PRECOG-metaZ.pcl', sep='\t')
+    precog <- read.csv('./data//PRECOG-metaZ.pcl', sep='\t')
     precog <- precog[, c(1, 2, which(colnames(precog) == name))]
     precog$type <- 1:dim(precog)[1]
     precog[which(precog[,3] >= 1.96), 4] <- 'oncogene' 
