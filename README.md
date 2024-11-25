@@ -30,6 +30,9 @@ CancerHubs is a novel computational framework designed to predict proteins and p
 ## Usage
 Refer to the `workflow.r` script to understand the sequence of operations performed from data preparation to network score calculation. The scripts require R programming environment and access to the datasets provided in the Data folder.
 
+## Work in progress
+This repository will be soon updated with data of other tumour types and a shiny app will be available to interactively explore our results.
+
 ## Data Availability
 All underlying data and scripts are available on this GitHub repository. The datasets used in this study are derived from public sources, and the specific versions are documented within the repository.
 
