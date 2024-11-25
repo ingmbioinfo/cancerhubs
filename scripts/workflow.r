@@ -1,9 +1,8 @@
+#Make sure the directories in the script match yours
 setwd("..")
-# Load custom functions from the 'functions.R' script
-source('./scripts/functions.R')  # Assuming 'functions.R' is in the 'project_cancer' working directory
 
-# Set the working directory to 'project_cancer'
-# (Note: It's mentioned as a comment; make sure it's appropriately set before running the script)
+# Load custom functions from the 'functions.R' script
+source('./scripts/functions.R')  # Assuming 'functions.R' is in the 'scripts' working directory
 
 # Read the 'NON_ORF' data from an RDS file
 NON_ORF <- readRDS('./data/NON_ORF')
@@ -18,6 +17,7 @@ interactors <- readRDS(file = './data/biogrid_interactors')
 
 # Create an empty list to store results
 all_results <- list()
+isolation_list= list()
 
 # Loop over the names of formatted datasets
 for (i in names(formatted_datasets)) {
@@ -48,21 +48,31 @@ for (i in names(formatted_datasets)) {
   res_list <- list()
   
   # Compute network results
-  res_list[['all_result_network']] <- result(mut_data, precog, interactors = cancer_specific_interactors, gene_list = gene_list)
+  res_list[['All_Genes']] <- result(mut_data, precog, interactors = cancer_specific_interactors, gene_list = gene_list)
   
   # Filter results based on precog_type (excluding 'none')
-  res_list[['precog_result_network']] <- filters(res_list[['all_result_network']], columns = c('precog_type'), filters = c('none'), filter_out = TRUE)
-  res_list[['non_precog_result_network']] <- filters(res_list[['all_result_network']], columns = c('precog_type'), filters = c('none'), filter_out = FALSE)
-  
+  res_list[['PRECOG']] <- filters(res_list[['All_Genes']], columns = c('precog_type'), filters = c('none'), filter_out = TRUE)
+  res_list[['Non_PRECOG']] <- filters(res_list[['All_Genes']], columns = c('precog_type'), filters = c('none'), filter_out = FALSE)
+
+  #Filter results by genes significant in precog and not mutated                                 
+  res_list[["Only_PRECOG"]] =  filters(res_list[['All_Genes']], columns = c('mutation'), filters = c("NONE"), filter_out= FALSE) 
+
+  #removing precog_type column                                      
+  remove_precog_type <- function(df) { df[, !colnames(df) %in% "precog_type"] } 
+  res_list <- lapply(res_list, remove_precog_type)    
+                                        
   # Compute isolation results
-  res_list[['all_result_isolation']] <- result(mut_data, precog, interactors = cancer_specific_interactors, gene_list = gene_list, isolation_score = TRUE)
+  isolation_result <- result(mut_data, precog, interactors = cancer_specific_interactors, gene_list = gene_list, isolation_score = TRUE) 
+  isolation_result <- remove_precog_type(isolation_result) 
+  isolation_list[[tumor_of_interest]] <- isolation_result
   
   # Save results for the current tumor in the main list
   all_results[[tumor_of_interest]] <- res_list
 }
 
 # Save the final results list to an RDS file
-saveRDS(all_results, './result/all_results')
+saveRDS(all_results, './result/all_results.rds')
+saveRDS(isolation_list, './result/isolation_list.rds')                                        
 
 # Print the current system time again
 Sys.time()
