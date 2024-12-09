@@ -48,4 +48,4 @@ For questions or support, please contact manfrini@ingm.org and ferrari@ingm.org.
 ## Citation
 If you use CancerHubs in your research, please cite our paper:
 
-Ivan Ferrari, Giancarlo Lai, Federica De Grossi, Stefania Oliveto, Stefano Biffo, Nicola Manfrini. "CancerHubs: A Systematic Data Mining and Elaboration Approach for Identifying Novel Cancer-Related Protein Interaction Hubs." [Journal, Volume, Year].
+Ivan Ferrari, Federica De Grossi, Giancarlo Lai, Stefania Oliveto, Giorgia Deroma, Stefano Biffo, Nicola Manfrini, **CancerHubs: a systematic data mining and elaboration approach for identifying novel cancer-related protein interaction hubs**, Briefings in Bioinformatics, Volume 26, Issue 1, January 2025, bbae635, https://doi.org/10.1093/bib/bbae635
