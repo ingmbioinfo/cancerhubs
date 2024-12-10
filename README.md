@@ -34,10 +34,8 @@ Refer to the `workflow.r` script to understand the sequence of operations perfor
 This repository will be soon updated with data of other tumour types and a shiny app will be available to interactively explore our results.
 
 ## Data Availability
-All underlying data and scripts are available on this GitHub repository. The datasets used in this study are derived from public sources, and the specific versions are documented within the repository.
-
-## Supplementary Data
-Supplementary data, including detailed tables of network scores and gene classifications, are provided for further exploration of cancer-specific and broad-cancer protein hubs.
+All underlying data and scripts are available in this GitHub repository. The datasets used in this study are derived from public sources, and the specific versions are documented within the repository.  
+This folder is currently being updated with new datasets. To **reproduce the results of the paper** and interactively explore them with the **BETA VERSION OF OUR SHINY APP** visit https://github.com/ingmbioinfo/cancerhubs_paper.
 
 ## Funding
 This research was funded by Associazione Italiana per la Ricerca sul Cancro (AIRC), under MFAG 2021 ID 26178 project to Nicola Manfrini.
