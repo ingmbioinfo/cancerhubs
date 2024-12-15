@@ -41,7 +41,7 @@ for (i in names(formatted_datasets)) {
   precog_interactors <- names(precog_interactors)[precog_interactors >= 10]
   
   # Extract cancer-specific interactors
-  cancer_specific_interactors <- lapply(interactors$as.matrix.interactors., function(x) x[x %in% precog_interactors])
+  cancer_specific_interactors <- lapply(interactors$gene_interactors, function(x) x[x %in% precog_interactors])
   cancer_specific_interactors <- data.frame(as.matrix(cancer_specific_interactors))
   
   # Create a list to store results for the current tumor
