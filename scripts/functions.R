@@ -141,3 +141,28 @@ filters <- function(res, columns, filters, filter_out = FALSE) {
   rownames(res) <- 1:dim(res)[1]
   return(res)
 }
+                 
+                 
+#Obtain interactors for each gene               
+get_gene_interactors <- function(gene_list, cancer_specific_interactors, mut_data, res_list, precog) {
+  gene_interactors = list()
+  inter <- data.frame(gene_list)
+  
+  # Store the list of interactors instead of just the count
+  inter$total_interactors <- lapply(gene_list, function(x) cancer_specific_interactors$as.matrix.cancer_specific_interactors.[[x]]) 
+  inter$mutated_interactors <- lapply(inter$total_interactors, function(x) x[x %in% unique(mut_data[, 1])])                                                                 
+  gene_interactors[["inter"]] <- inter
+  
+  genes = res_list$PRECOG$gene_list                                      
+  precog_inter = data.frame(genes)
+  
+  precog_inter$precog = lapply(res_list$PRECOG$gene_list, function(x) cancer_specific_interactors$as.matrix.cancer_specific_interactors.[[x]])    
+  precog_inter$precog = lapply(precog_inter$precog, function(x) x[x %in% unique(precog[precog$type != "none", 1])])                           
+  
+  precog_inter$precog_mut = lapply(precog_inter$precog, function(x) x[x %in% unique(mut_data[mut_data$precog, 1])]) 
+  
+  precog_inter = precog_inter[order(precog_inter$genes),]                                 
+  gene_interactors[["precog_inter"]] = precog_inter  
+  
+  return(gene_interactors)
+}                 

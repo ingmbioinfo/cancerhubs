@@ -18,6 +18,7 @@ interactors <- readRDS(file = './data/biogrid_interactors')
 # Create an empty list to store results
 all_results <- list()
 isolation_list= list()
+gene_interactors_list = list() 
 
 # Loop over the names of formatted datasets
 for (i in names(formatted_datasets)) {
@@ -56,6 +57,10 @@ for (i in names(formatted_datasets)) {
 
   #Filter results by genes significant in precog and not mutated                                 
   res_list[["Only_PRECOG"]] =  filters(res_list[['All_Genes']], columns = c('mutation'), filters = c("NONE"), filter_out= FALSE) 
+                                        
+  #retriving interactors
+  interactors_df = get_gene_interactors(gene_list, cancer_specific_interactors, mut_data, res_list, precog)                         
+  gene_interactors_list[[tumor_of_interest ]]  = interactors_df                                      
 
   #removing precog_type column                                      
   remove_precog_type <- function(df) { df[, !colnames(df) %in% "precog_type"] } 
@@ -72,7 +77,12 @@ for (i in names(formatted_datasets)) {
 
 # Save the final results list to an RDS file
 saveRDS(all_results, './result/all_results.rds')
-saveRDS(isolation_list, './result/isolation_list.rds')                                        
+saveRDS(isolation_list, './result/isolation_list.rds')
+saveRDS(gene_interactors_list, './result/genes_interactors_list.rds')
+                                        
+for (name in names(gene_interactors_list)) {
+    write.xlsx( gene_interactors_list[[name]], paste0("./result/",name, "_","interactors.xlsx"))
+  }                                        
 
 # Print the current system time again
 Sys.time()
