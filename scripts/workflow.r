@@ -80,9 +80,8 @@ saveRDS(all_results, './result/all_results.rds')
 saveRDS(isolation_list, './result/isolation_list.rds')
 saveRDS(gene_interactors_list, './result/genes_interactors_list.rds')
                                         
-for (name in names(gene_interactors_list)) {
-    write.xlsx( gene_interactors_list[[name]], paste0("./result/",name, "_","interactors.xlsx"))
-  }                                        
+generate_all_interactomes(data =  gene_interactors_list, original = all_results, output_dir = "./result/interactions_download/" )         
+                                        
 
 # Print the current system time again
 Sys.time()

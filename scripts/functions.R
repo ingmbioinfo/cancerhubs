@@ -165,4 +165,75 @@ get_gene_interactors <- function(gene_list, cancer_specific_interactors, mut_dat
   gene_interactors[["precog_inter"]] = precog_inter  
   
   return(gene_interactors)
-}                 
+} 
+                                   
+                                   
+                                   
+library(openxlsx)
+
+generate_all_interactomes <- function(data, original, output_dir) {
+  
+  scenarios <- list(
+    list(use_precog = TRUE, include_mutated = FALSE, suffix = "_precog"),
+    list(use_precog = TRUE, include_mutated = TRUE, suffix = "_precog_mut"),
+    list(use_precog = FALSE, include_mutated = FALSE, suffix = "_all_genes"),
+    list(use_precog = FALSE, include_mutated = TRUE, suffix = "_all_genes_mut")
+  )
+  
+  for (cancer_type in names(data)) {
+    
+    cancer_data <- data[[cancer_type]]
+    if (is.null(cancer_data)) next  # Skip invalid cancer types
+    
+    for (scenario in scenarios) {
+      
+      use_precog <- scenario$use_precog
+      include_mutated <- scenario$include_mutated
+      suffix <- scenario$suffix
+      
+      sel_data <- if (use_precog) cancer_data[["precog_inter"]] else cancer_data[["inter"]]
+      selection <- if (use_precog) {
+        if (include_mutated) "precog_mut" else "precog"
+      } else {
+        if (include_mutated) "mutated_interactors" else "total_interactors"
+      }
+      
+      if (!(selection %in% names(sel_data))) next  # Skip if selection column is missing
+      
+      original_type <- if (use_precog) "PRECOG" else "All_Genes"
+      column_name <- if ("gene_list" %in% colnames(sel_data)) "gene_list" else "genes"
+      
+      nodes <- original[[cancer_type]][[original_type]]
+      nodes <- nodes[nodes$gene_list %in% unique(sel_data[[column_name]]), ]
+      
+      edges <- data.frame(from = character(), to = character(), stringsAsFactors = FALSE)
+      
+      for (i in seq_along(nodes$gene_list)) {
+        gene <- nodes$gene_list[i]
+        interactors_gene <- sel_data[sel_data[[column_name]] == gene, selection]
+        
+        if (length(interactors_gene) > 0) {
+          interactors <- unlist(interactors_gene)
+          new_edges <- data.frame(from = pmin(gene, interactors), to = pmax(gene, interactors), stringsAsFactors = FALSE)
+          edges <- rbind(edges, new_edges)
+        }
+      }
+      
+      # Write to Excel
+      file_name <- file.path(output_dir, paste0(cancer_type, suffix, ".xlsx"))
+      wb <- createWorkbook()
+      addWorksheet(wb, "Nodes")
+      addWorksheet(wb, "Edges")
+      writeData(wb, "Nodes", nodes)
+      writeData(wb, "Edges", edges)
+      saveWorkbook(wb, file_name, overwrite = TRUE)
+      
+      if (!file.exists(file_name)) {
+        print(paste("Failed to save file:", file_name))
+        }
+    }
+  }
+}
+                                   
+                                   
+                                   
