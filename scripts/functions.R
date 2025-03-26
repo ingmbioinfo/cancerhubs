@@ -205,6 +205,22 @@ generate_all_interactomes <- function(data, original, output_dir) {
       
       nodes <- original[[cancer_type]][[original_type]]
       nodes <- nodes[nodes$gene_list %in% unique(sel_data[[column_name]]), ]
+        
+      # Extract all genes (original + interactors)
+      all_genes <- unique(c(nodes$gene_list, unlist(sel_data[[selection]])))
+
+      # Find missing interactors
+      missing_genes <- setdiff(all_genes, nodes$gene_list)
+
+      if (length(missing_genes) > 0) {
+        # Create an empty dataframe with the same columns as `nodes`
+        missing_nodes <- as.data.frame(matrix(NA, nrow = length(missing_genes), ncol = ncol(nodes)))
+        colnames(missing_nodes) <- colnames(nodes)  # Ensure column names match
+        missing_nodes$gene_list <- missing_genes    # Fill only gene_list column
+  
+       # Append new interactors to nodes
+        nodes <- rbind(nodes, missing_nodes)
+         }  
       
       edges <- data.frame(from = character(), to = character(), stringsAsFactors = FALSE)
       
