@@ -174,10 +174,11 @@ library(openxlsx)
 generate_all_interactomes <- function(data, original, output_dir) {
   
   scenarios <- list(
-    list(use_precog = TRUE, include_mutated = FALSE, suffix = "_precog"),
-    list(use_precog = TRUE, include_mutated = TRUE, suffix = "_precog_mut"),
-    list(use_precog = FALSE, include_mutated = FALSE, suffix = "_all_genes"),
-    list(use_precog = FALSE, include_mutated = TRUE, suffix = "_all_genes_mut")
+    list(use_precog = "PRECOG", include_mutated = FALSE, suffix = "_precog"),
+    list(use_precog = "PRECOG", include_mutated = TRUE, suffix = "_precog_mut"),
+    list(use_precog = "ALL", include_mutated = FALSE, suffix = "_all_genes"),
+    list(use_precog = "ALL", include_mutated = TRUE, suffix = "_all_genes_mut"),
+    list(use_precog = "ONLY MUT", include_mutated = TRUE, suffix = "_only_mut")
   )
   
   for (cancer_type in names(data)) {
@@ -191,8 +192,8 @@ generate_all_interactomes <- function(data, original, output_dir) {
       include_mutated <- scenario$include_mutated
       suffix <- scenario$suffix
       
-      sel_data <- if (use_precog) cancer_data[["precog_inter"]] else cancer_data[["inter"]]
-      selection <- if (use_precog) {
+      sel_data <- if (use_precog == "PRECOG") cancer_data[["precog_inter"]] else cancer_data[["inter"]]
+      selection <- if (use_precog == "PRECOG") {
         if (include_mutated) "precog_mut" else "precog"
       } else {
         if (include_mutated) "mutated_interactors" else "total_interactors"
@@ -200,27 +201,26 @@ generate_all_interactomes <- function(data, original, output_dir) {
       
       if (!(selection %in% names(sel_data))) next  # Skip if selection column is missing
       
-      original_type <- if (use_precog) "PRECOG" else "All_Genes"
+      original_type <- if (use_precog == "PRECOG") "PRECOG" else if (use_precog == "ONLY MUT") "Non_PRECOG" else "All_Genes"
       column_name <- if ("gene_list" %in% colnames(sel_data)) "gene_list" else "genes"
       
       nodes <- original[[cancer_type]][[original_type]]
       nodes <- nodes[nodes$gene_list %in% unique(sel_data[[column_name]]), ]
-        
+      
       # Extract all genes (original + interactors)
       all_genes <- unique(c(nodes$gene_list, unlist(sel_data[[selection]])))
 
       # Find missing interactors
       missing_genes <- setdiff(all_genes, nodes$gene_list)
-
+      
       if (length(missing_genes) > 0) {
-        # Create an empty dataframe with the same columns as `nodes`
         missing_nodes <- as.data.frame(matrix(NA, nrow = length(missing_genes), ncol = ncol(nodes)))
         colnames(missing_nodes) <- colnames(nodes)  # Ensure column names match
         missing_nodes$gene_list <- missing_genes    # Fill only gene_list column
-  
-       # Append new interactors to nodes
+        
+        # Append new interactors to nodes
         nodes <- rbind(nodes, missing_nodes)
-         }  
+      }
       
       edges <- data.frame(from = character(), to = character(), stringsAsFactors = FALSE)
       
@@ -244,12 +244,11 @@ generate_all_interactomes <- function(data, original, output_dir) {
       writeData(wb, "Edges", edges)
       saveWorkbook(wb, file_name, overwrite = TRUE)
       
-      if (!file.exists(file_name)) {
-        print(paste("Failed to save file:", file_name))
-        }
+      print(paste("Saved:", file_name))
     }
   }
 }
+
                                    
                                    
                                    
