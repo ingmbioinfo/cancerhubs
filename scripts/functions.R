@@ -178,7 +178,11 @@ generate_all_interactomes <- function(data, original, output_dir) {
     list(use_precog = "PRECOG", include_mutated = TRUE, suffix = "_precog_mut"),
     list(use_precog = "ALL", include_mutated = FALSE, suffix = "_all_genes"),
     list(use_precog = "ALL", include_mutated = TRUE, suffix = "_all_genes_mut"),
-    list(use_precog = "ONLY MUT", include_mutated = TRUE, suffix = "_only_mut")
+    list(use_precog = "ONLY MUT", include_mutated = FALSE, suffix = "_only_mutated"),  
+    list(use_precog = "ONLY MUT", include_mutated = TRUE, suffix = "_only_mutated_mut"),
+    list(use_precog = "ONLY PRECOG", include_mutated = FALSE, suffix = "_only_precog"),  
+    list(use_precog = "ONLY PRECOG", include_mutated = TRUE, suffix = "_only_precog_mut")
+      
   )
   
   for (cancer_type in names(data)) {
@@ -192,8 +196,8 @@ generate_all_interactomes <- function(data, original, output_dir) {
       include_mutated <- scenario$include_mutated
       suffix <- scenario$suffix
       
-      sel_data <- if (use_precog == "PRECOG") cancer_data[["precog_inter"]] else cancer_data[["inter"]]
-      selection <- if (use_precog == "PRECOG") {
+      sel_data <- if ( use_precog %in% c("PRECOG","ONLY PRECOG")) cancer_data[["precog_inter"]] else cancer_data[["inter"]]
+      selection <- if (use_precog %in% c("PRECOG","ONLY PRECOG")) {
         if (include_mutated) "precog_mut" else "precog"
       } else {
         if (include_mutated) "mutated_interactors" else "total_interactors"
@@ -201,7 +205,7 @@ generate_all_interactomes <- function(data, original, output_dir) {
       
       if (!(selection %in% names(sel_data))) next  # Skip if selection column is missing
       
-      original_type <- if (use_precog == "PRECOG") "PRECOG" else if (use_precog == "ONLY MUT") "Non_PRECOG" else "All_Genes"
+      original_type <- if (use_precog == "PRECOG") "PRECOG" else if (use_precog == "ONLY PRECOG") "Only_PRECOG" else if (use_precog == "ONLY MUT") "Non_PRECOG" else "All_Genes"
       column_name <- if ("gene_list" %in% colnames(sel_data)) "gene_list" else "genes"
       
       nodes <- original[[cancer_type]][[original_type]]
@@ -248,6 +252,7 @@ generate_all_interactomes <- function(data, original, output_dir) {
     }
   }
 }
+
 
                                    
                                    
