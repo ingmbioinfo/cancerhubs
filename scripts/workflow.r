@@ -38,7 +38,7 @@ for (i in names(formatted_datasets)) {
   gene_list <- filter_genes(mut_data)
   
   # Count precog interactors and select those with count >= 10
-  precog_interactors <- lapply(interactors[!mut_data$precog, ], function(x) sum(x %in% unique(mut_data[mut_data$precog, 1])))
+  precog_interactors <- lapply(interactors$gene_interactors, function(x) sum(x %in% unique(mut_data[mut_data$precog, 1])))
   precog_interactors <- names(precog_interactors)[precog_interactors >= 10]
   
   # Extract cancer-specific interactors
