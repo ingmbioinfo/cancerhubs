@@ -109,7 +109,7 @@ To run the full pipeline locally:
    source("workflow.r")
    ```
 
-For full reproducibility with frozen data versions, refer to the companion repository:  
+For full reproducibility of paper results with frozen data versions, refer to the companion repository:  
 📘 [`cancerhubs_paper`](https://github.com/ingmbioinfo/cancerhubs_paper)
 
 ---
