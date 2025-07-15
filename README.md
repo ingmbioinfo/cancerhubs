@@ -32,15 +32,13 @@ This formula reflects how strongly a gene is embedded in a network of cancer-mut
 
 ---
 
-## Data Sources and Methodology
 
-- **Mutational Data**: Sourced from previously published datasets for selected cancers (Multiple Myeloma, Breast Cancer, Prostate Cancer, Colorectal Cancer, and Pancreatic Cancer).
-- **Clinical Outcome Predictions**: Utilizes Precog Meta-Z data to correlate gene expression with overall survival.
-- **Interactomics**: Interaction data are extracted from the BioGrid database, focusing on interactions between proteins encoded by genes found in the mutated gene lists.
-
----
 
 ## Pipeline Overview
+
+For a step-by-step description of the CancerHubs pipeline, including the exact scripts and parameters used to build the interactome and compute gene scores, please see the full reproducibility companion repository:
+📘 [`cancerhubs_paper`](https://github.com/ingmbioinfo/cancerhubs_paper)
+
 
 - **1. Data Retrieval**  
   Mutation data are collected for each tumour type. Genes are filtered for coding/non-coding status.
@@ -109,14 +107,20 @@ To run the full pipeline locally:
    source("workflow.r")
    ```
 
-For full reproducibility of paper results with frozen data versions, refer to the companion repository:  
+For full reproducibility with frozen data versions, refer to the companion repository:  
 📘 [`cancerhubs_paper`](https://github.com/ingmbioinfo/cancerhubs_paper)
 
 ---
 
-## Data Availability
+## Data Sources and Availability
 
-All underlying data and scripts are available in this GitHub repository. The datasets used in this study are derived from public sources, and the specific versions are documented within the repository.
+**Mutational Data**: Derived from 14 published cancer genomic studies encompassing both adult and paediatric datasets, including WES, WGS, or mixed approaches. Tumour types include Multiple Myeloma, Breast Cancer, Prostate Cancer, Pancreatic Cancer, Colorectal Cancer, Ovarian Cancer, Gastric Cancer, Small Cell Lung Cancer, B-ALL, Burkitt Lymphoma, and Melanoma.
+
+**Clinical Outcome Predictions**: PRECOG meta-Z scores were used to assess correlation between gene expression and patient survival.
+
+**Protein Interactions**: BioGRID protein–protein interaction data provided the reference interactome, restricted to physical interactions involving the selected gene sets.
+
+All processed datasets and scripts are included in this GitHub repository. The versions and formats used are documented below.
 
 ### Included Files
 
