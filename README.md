@@ -36,10 +36,6 @@ This formula reflects how strongly a gene is embedded in a network of cancer-mut
 
 ## Pipeline Overview
 
-For a step-by-step description of the CancerHubs pipeline, including the exact scripts and parameters used to build the interactome and compute gene scores, please see the full reproducibility companion repository:
-📘 [`cancerhubs_paper`](https://github.com/ingmbioinfo/cancerhubs_paper)
-
-
 - **1. Data Retrieval**  
   Mutation data are collected for each tumour type. Genes are filtered for coding/non-coding status.
 
