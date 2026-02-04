@@ -10,25 +10,49 @@
 ---
 
 ## Overview
-CancerHubs is a novel computational framework designed to predict proteins and pathways involved in cancer by integrating mutational data, clinical outcome predictions, and interactomics. This method ranks genes based on the number of mutated interactors their corresponding proteins have, defining hubs of mutated proteins with potential relevance for cancer research and therapy.
+
+CancerHubs is a computational method that identifies **cancer-relevant protein hubs** by integrating:
+- Somatic mutation data
+- Prognostic gene expression scores (PRECOG)
+- Protein–protein interaction networks (BioGRID)
+
+By ranking genes based on the **number of mutated interactors**, it prioritises central players in cancer-related pathways—beyond mutation frequency alone. This network-centric perspective allows the discovery of potential driver genes otherwise overlooked by traditional methods.
+
+### Network Score
+
+Each gene is assigned a **Network Score** defined as:
+
+```
+Network Score = (# Mutated Interactors)^2 / (# Total Interactors)
+```
+
+This formula reflects how strongly a gene is embedded in a network of cancer-mutated interactors. Higher scores indicate greater centrality and functional relevance in tumour contexts.
+
+> **Note:** The Network Score is computed exclusively from somatic mutation data. It does **not** take into account copy-number variations or structural alterations.
 
 ---
 
-## Data Sources and Methodology
 
-- **Mutational Data**: Sourced from previously published datasets for selected cancers (Multiple Myeloma, Breast Cancer, Prostate Cancer, Colorectal Cancer, and Pancreatic Cancer).
-- **Clinical Outcome Predictions**: Utilizes Precog Meta-Z data to correlate gene expression with overall survival.
-- **Interactomics**: Interaction data are extracted from the BioGrid database, focusing on interactions between proteins encoded by genes found in the mutated gene lists.
 
----
+## Pipeline Overview
 
-## Pipeline Description
+- **1. Data Retrieval**  
+  Mutation data are collected for each tumour type. Genes are filtered for coding/non-coding status.
 
-1. **Data Retrieval**: Mutation datasets are collected, and a list of mutated genes is generated for each cancer type.
-2. **Clinical Outcome Correlation**: Z-scores quantifying the correlation between gene expression and patient survival are merged with mutational data.
-3. **Gene Classification**: Genes are classified based on their mutation status and correlation with clinical outcomes into MUT (exclusively mutated), PRECOG (expression correlated with outcomes but not mutated), and MUT + PRECOG (both mutated and expression correlated with outcomes).
-4. **Interactome Determination**: The global interactome of each cancer-related gene is defined.
-5. **Network Score Calculation**: A network score is calculated for each gene based on the number of mutated interactors, ranking genes to define protein hubs.
+- **2. Clinical Outcome Correlation**  
+  Gene expression–survival associations are obtained from PRECOG and integrated as meta-Z scores.
+
+- **3. Gene Classification**  
+  Genes are labelled as:  
+  - **MUT** – mutated only  
+  - **PRECOG** – prognosis-associated only  
+  - **MUT + PRECOG** – both
+
+- **4. Network Construction**  
+  BioGRID interactions define the gene interactome.
+
+- **5. Network Scoring**  
+  Genes are scored and ranked by the fraction and number of mutated interactors.
 
 ---
 
@@ -36,21 +60,25 @@ CancerHubs is a novel computational framework designed to predict proteins and p
 
 This repository contains the **core pipeline** used to process mutation data, integrate clinical scores, and calculate network-based gene rankings.
 
-### Key Scripts
+### Contents
 
-- `biogrid_extractor.r` — extracts gene interaction information from BioGRID.
-- `workflow.r` — main analysis pipeline.
-- `functions.r` — functions for computing the network score.
+- **/scripts**  
+  Core R scripts for mutation integration and scoring.
 
-### Output
+- **/data**  
+  Input datasets (formatted mutation and interactome data).
 
-- `all_results.rds`: Core R object containing rankings by cancer and category (used in the app and downstream analyses).
+- **/result/all_results.rds**  
+  Main output object containing ranked genes, used by the Shiny app.
+
+- **/docs**  
+  Supplementary data and mutation annotation summaries.
 
 ---
 
-## Explore Our Results
+## 🌐 Web Application
 
-An interactive Shiny web application is now available at:  
+An interactive Shiny web application is now available:  
 👉 [https://cancerhubs.app](https://cancerhubs.app)
 
 Use it to:
@@ -59,17 +87,44 @@ Use it to:
 - Browse interactors and 3D networks
 - Download gene-specific data and networks
 
-The app source code is available at:  
+App source code:  
 🔗 [https://github.com/ingmbioinfo/cancerhubs_shiny](https://github.com/ingmbioinfo/cancerhubs_shiny)
 
 ---
 
-## Data Availability
+## 🔄 How to Reproduce
 
-All underlying data and scripts are available in this GitHub repository. The datasets used in this study are derived from public sources, and the specific versions are documented within the repository.
+To run the full pipeline locally:
 
-To **reproduce the results of the paper** and interactively explore them, visit the reproducibility repository:  
-📘 [https://github.com/ingmbioinfo/cancerhubs_paper](https://github.com/ingmbioinfo/cancerhubs_paper)
+1. Install required packages (see headers in `functions.r`)
+2. Clone this repository and set the working directory
+3. Execute the pipeline:
+   ```r
+   source("workflow.r")
+   ```
+
+For full reproducibility with frozen data versions, refer to the companion repository:  
+📘 [`cancerhubs_paper`](https://github.com/ingmbioinfo/cancerhubs_paper)
+
+---
+
+## Data Sources and Availability
+
+**Mutational Data**: Derived from 14 published cancer genomic studies encompassing both adult and paediatric datasets, including WES, WGS, or mixed approaches. Tumour types include Multiple Myeloma, Breast Cancer, Prostate Cancer, Pancreatic Cancer, Colorectal Cancer, Ovarian Cancer, Gastric Cancer, Small Cell Lung Cancer, B-ALL, Burkitt Lymphoma, and Melanoma.
+
+**Clinical Outcome Predictions**: PRECOG meta-Z scores were used to assess correlation between gene expression and patient survival.
+
+**Protein Interactions**: BioGRID protein–protein interaction data provided the reference interactome, restricted to physical interactions involving the selected gene sets.
+
+All processed datasets and scripts are included in this GitHub repository. The versions and formats used are documented below.
+
+### Included Files
+
+- [`all_results.rds`](https://github.com/ingmbioinfo/cancerhubs/blob/main/result/all_results.rds): Gene-wise rankings for each tumour type, including Network Scores and annotation categories.
+- [`genes_interactors_list.rds`](https://github.com/ingmbioinfo/cancerhubs/blob/main/result/genes_interactors_list.rds): Curated interactome data mapping each gene to its interaction partners.
+- [`formatted_datasets`](https://github.com/ingmbioinfo/cancerhubs/tree/main/data/formatted_datasets): Input gene tables formatted for pipeline ingestion.
+- [`biogrid_interactors`](https://github.com/ingmbioinfo/cancerhubs/blob/main/data/biogrid_interactors): Full PPI interaction records derived from BioGRID.
+- [`Mutational Data Summary`](https://github.com/ingmbioinfo/cancerhubs/blob/main/Mutational%20Data.pdf): PDF with curation criteria and source references for mutation datasets.
 
 ---
 
